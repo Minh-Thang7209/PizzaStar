@@ -1,0 +1,97 @@
+@model PizzaStar.ViewModels.CartViewModel
+
+@{
+    ViewData["Title"] = "Кошик";
+}
+
+<div class="container my-5">
+    <h1 class="mb-4">
+        <i class="fa-solid fa-cart-shopping"></i>
+        Мій кошик
+    </h1>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="alert alert-info text-center p-5">
+            <h4>Ваш кошик поки порожній</h4>
+            <p>Додайте улюблені страви, щоб продовжити.</p>
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-primary mt-2">
+                Перейти до меню
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Страва</th>
+                        <th class="text-center">Ціна</th>
+                        <th class="text-center">Кількість</th>
+                        <th class="text-end">Сума</th>
+                        <th class="text-center">Дія</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    @if (!string.IsNullOrEmpty(item.Product.Image))
+                                    {
+                                        <img src="@item.Product.Image"
+                                             alt="@item.Product.Name"
+                                             class="cart-product-image" />
+                                    }
+
+                                    <span class="fw-semibold">
+                                        @item.Product.Name
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td class="text-center text-nowrap">
+                                @item.Product.Price.ToString("N2") ₴
+                            </td>
+
+                            <td class="text-center">
+                                <span class="badge bg-light text-dark border fs-6">
+                                    @item.Quantity
+                                </span>
+                            </td>
+
+                            <td class="text-end fw-bold text-nowrap">
+                                @((item.Product.Price * item.Quantity).ToString("N2")) ₴
+                            </td>
+
+                            <td class="text-center">
+                                <form asp-controller="Cart"
+                                      asp-action="Remove"
+                                      method="post">
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="productId"
+                                           value="@item.Product.Id" />
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm"
+                                            title="Видалити">
+                                        <i class="fa-solid fa-trash"></i>
+                                        Видалити
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+```

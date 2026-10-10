@@ -1,0 +1,100 @@
+@{
+    Layout = "_PanelLayout.cshtml";
+    ViewData["Title"] = "Користувачі";
+}
+@model IEnumerable<User>
+ 
+<div class="breadcrumb-main">
+    <div class="breadcrumb-container clearfix">
+        <h1 class="page-title">Панель управління</h1>
+        <ul class="breadcrumb">
+            <li><a asp-action="Index" asp-controller="Panel">Головна</a></li>
+            <li><a asp-action="Users" asp-controller="Panel">Користувачі</a></li>
+        </ul>
+    </div>
+</div>
+ 
+<div class="row g-4 py-5 row-cols-1">
+ 
+    <a asp-controller="Panel" asp-action="CreateOrUpdateUser" class="btn btn-primary">Додати нового користувача</a>
+ 
+    <div class="input-group themability-search">
+        @{
+            ViewBag.searches = new string[] { "Email", "PhoneNumber" };
+        }
+        @await Html.PartialAsync("_SearchOptions", Model)
+    </div>
+ 
+    <div class="p-5 mb-4 bg-light rounded-3 ovx table-responsive">
+        <table class="table">
+            <tr>
+                <th>Email</th>
+                <th>Номер телефону</th>
+                <th>Рік народження</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            @foreach (var user in Model)
+            {
+                @*Обов'язково прописуємо цей атрибут
+            За допомогою нього ми видалимо цей рядок
+            використовуючи JavaScript*@
+                <tr data-rowid="@user.Id">
+                    <td>@user.Email</td>
+                    <td>@user.PhoneNumber</td>
+                    <td>@user.Year</td>
+                    <td><a class="btn btn-sm btn-primary" asp-action="EditRole" asp-controller="Panel"
+                               asp-route-userid="@user.Id">Роль</a></td>
+                        <td><a class="btn btn-sm btn-primary" asp-action="CreateOrUpdateUser" asp-controller="Panel"
+                                   asp-route-userId="@user.Id">Змінити</a></td>
+                            <td>
+                                @*Обов'язково прописуємо onClick та метод, який оброблятиме клік*@
+                                <button onclick="deleteUser('@user.Id')" class="btn btn-sm btn-danger">Видалити</button>
+                            </td>
+                        </tr>
+                    }
+                </table>
+ 
+                <div class="text-center">
+                    @await Html.PartialAsync("_Pages", Model)
+                </div>
+ 
+                @await Html.PartialAsync("_Modal", "Видалити вибраного користувача?")
+ 
+                @section Scripts {
+                    <script>
+                                async function deleteUser(userId) {
+ 
+                                    const btnYes = document.getElementById('btn-Yes');
+                                    const btnNo = document.getElementById('btn-No');
+ 
+                                    $('#confirmModal').modal('show');
+ 
+                                    //Якщо натиснули так, видаляємо
+                                    btnYes.onclick = () => {
+                                        const deleteItem = fetch(`/panel/delete-user/?userId=${userId}`, { method: 'DELETE' })
+                                            .then(response => {
+                                                if (!response.ok) {
+                                                    throw new Error('Network response was not ok');
+                                                }
+                                                //Видаляємо рядок
+                                                document.querySelector("tr[data-rowid='" + userId + "']").remove();
+                                                //Закриваємо модальне вікно
+                                                $('#confirmModal').modal('hide');
+                                            })
+                                            .catch(error => {
+                                                console.error('There was a problem with the fetch operation:', error);
+                                                // Обробка помилки видалення
+                                            });
+                                    }
+                                    //Якщо натиснули ні, приховуємо
+                                    btnNo.onclick = () => {
+                                        $('#confirmModal').modal('hide');
+                                    }
+                                }
+                    </script>
+                }
+ 
+            </div>
+        </div>

@@ -1,0 +1,31 @@
+@using Microsoft.AspNetCore.Identity
+@{
+    Layout = "_PanelLayout.cshtml";
+    ViewData["Title"] = "Зміна ролей користувача";
+}
+ 
+<div class="row justify-content-center">
+    <div class="col-sm-12">
+        <div class="well mt-5">
+            <h3>Зміна ролей користувача</h3>
+            <form asp-controller="Panel"  asp-action="EditRole" method="post">
+                <input type="hidden" name="userId" value="@Model.UserId" />
+                <div class="form-group">
+                    @foreach (IdentityRole role in Model.AllRoles)
+                    {
+                        <input type="checkbox" name="roles" value="@role.Name"
+                           @(Model.UserRoles.Contains(role.Name) ? "checked=\"checked\"" : "") />
+                        @role.Name <br />
+                    }
+                </div>
+                <div class="form-group">
+                    @Html.AntiForgeryToken()
+                    <input type="submit" value="Зберегти" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ 
+@*Для валідації моделі на клієнті*@
+@await Html.PartialAsync("_ValidationScriptsPartial")

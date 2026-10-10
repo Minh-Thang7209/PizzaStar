@@ -1,0 +1,46 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ 
+<div class="blog-section">
+    <div id="checkout-cart" class="container">
+        <div class="row">
+ 
+            <aside id="column-left" class="col-sm-3">
+                <div class="category-content">
+                    <div class="box-category">
+                        <h3 class="toggled relative">Налаштування</h3>
+                        <ul class="list-unstyled parent" id="select-category">
+                            <li>
+                                <a asp-action="Index" asp-controller="Panel" class="list-group-item">Головна</a>
+                            </li>
+                            <li>
+                                <a asp-action="Categories" asp-controller="Panel" class="list-group-item">Категорії</a>
+                            </li>
+                            <li>
+                                <a asp-action="Dishes" asp-controller="Panel" class="list-group-item">Продукти</a>
+                            </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li>
+                                    <a asp-action="Users" asp-controller="Panel" class="list-group-item">Користувачі</a>
+                                </li>
+                                <li>
+                                    <a asp-action="Statistics" asp-controller="Panel" class="list-group-item">Статистика</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+ 
+            <div id="content" class="col-sm-9 all-blog">
+                @*Основний вміст сторінки*@
+                @RenderBody()
+            </div>
+ 
+        </div>
+    </div>
+</div>
+<!-- Секція для підвантаження скриптів із інших уявлень -->
+@await RenderSectionAsync("Scripts", required: false)
